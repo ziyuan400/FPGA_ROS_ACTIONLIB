@@ -1,0 +1,112 @@
+% Encoding: UTF-8
+
+@Article{Goehringer2013,
+  author    = {Diana Göhringer and Lukas Meder and Oliver Oey and Jürgen Becker},
+  title     = {Reliable and adaptive network-on-chip architectures for cyber physical systems},
+  journal   = {{ACM} Transactions on Embedded Computing Systems},
+  year      = {2013},
+  volume    = {12},
+  number    = {1s},
+  pages     = {1--21},
+  month     = {mar},
+  doi       = {10.1145/2435227.2435247},
+  file      = {:Articles/Reliable and Adaptive Network-on-Chip Architectures for Cyber.pdf:PDF},
+  owner     = {Julian Haase},
+  publisher = {Association for Computing Machinery ({ACM})},
+  timestamp = {2018-03-22},
+}
+
+@InProceedings{Dally2001,
+  author    = {W. J. Dally and B. Towles},
+  title     = {Route packets, not wires: on-chip interconnection networks},
+  booktitle = {Proceedings of the 38th Design Automation Conference (IEEE Cat. No.01CH37232)},
+  year      = {2001},
+  pages     = {684-689},
+  abstract  = {Using on-chip interconnection networks in place of ad-hoc global wiring structures the top level wires on a chip and facilitates modular design. With this approach, system modules (processors, memories, peripherals, etc...) communicate by sending packets to one another over the network. The structured network wiring gives well-controlled electrical parameters that eliminate timing iterations and enable the use of high-performance circuits to reduce latency and increase bandwidth. The area overhead required to implement an on-chip network is modest, we estimate 6.6%. This paper introduces the concept of on-chip networks, sketches a simple network, and discusses some challenges in the architecture and design of these networks.},
+  doi       = {10.1109/DAC.2001.156225},
+  file      = {:InProceedings/Route Packets, Not Wires On-Chip Interconnection Networks.pdf:PDF},
+  issn      = {0738-100X},
+  keywords  = {CMOS digital integrated circuits;circuit optimisation;crosstalk;integrated circuit interconnections;integrated circuit layout;modules;wiring;area overhead;electrical parameters;latency;modular design;on-chip interconnection networks;system modules;timing iterations;top level wires;Bandwidth;Circuits;Communication system control;Digital signal processing chips;Logic;Multiprocessor interconnection networks;Network-on-a-chip;Tiles;Wires;Wiring},
+  owner     = {Julian Haase},
+  timestamp = {2018-03-19},
+  url       = {http://ieeexplore.ieee.org/document/935594/},
+}
+
+@Book{Ogras2013,
+  title     = {Modeling, Analysis and Optimization of Network-on-Chip Communication Architectures},
+  publisher = {Springer Netherlands},
+  year      = {2013},
+  author    = {Umit Y. Ogras and Radu Marculescu},
+  doi       = {10.1007/978-94-007-3958-1},
+  file      = {:Books/Modeling, Analysis and Optimization of Network-on-Chip Communication Architectures.pdf:PDF},
+  owner     = {Julian Haase},
+  timestamp = {2018-03-26},
+}
+
+@PhdThesis{Logvinenko2014,
+  author      = {Logvinenko, Alexander},
+  title       = {Optimierung von Networks-on-Chip mit Hilfe der dynamischen Rekonfiguration},
+  year        = {2014},
+  type        = {phdthesis},
+  abstract    = {Modern processors are developed modularly. Therefore new developments need not be re-scheduled from the scratch; rather prefabricated components - so-called IP blocks (Intellectual Property blocks) - can be used.
+In order to connect the individual IPs, a reconfigurable architecture for network-on-chip has been developed: Reconfigurable Multi-Interconnection Network (RecMIN). It is able to adapt to the current traffic situation of the network.
+The developed architecture consists of single reconfigurable cells. In addition, the reconfiguration architecture has a higher degree of reuse for the hardware structures, such as regarding buffer, multiplexer. This means that the components of the previously active topology are actively used also after the reconfiguration to the new topology.
+In order to enable the simulation of the reconfiguration architecture, a simulation program RecSim was implemented.
+Finally, three algorithms are presented that observe the behavior of the RecMIN and perform a reconfiguration when needed. In this way the network topology is to remain optimally adapted to the traffic even if the load changes.
+The results of the simulation showed that the proposed reconfigurable network structure has the potential to improve the performance of some applications, especially those which switch between two or more traffic proles. For some applications RecMIN-architecture would significantly reduce paket delays (up to factor seven) (see chapter 6).
+For the hardware realization of the RecMIN-architecture on FPGA a Xilinx-FPGA with FIFO-buffer concept is recommended, as one of the best solutions for the RecMin realization. However, if circular buffer is chosen for RecMIN, which mostly makes sense for high packet traffic, the choice between Altera- and Xilinx-FPGAs would have to be made individually, for each specific case, based on the data from the images 7.9 - 7.11.
+The comparison between the three suggested reconfiguration algorithms provides the following conclusion:
+ŋ-algorithm can be used in computer simulations to compare the results achieved from other algorithms. However, integrating the ŋ-algorithm into a SoC is attended with hardware complexity.
+Minimal-Queues-Algorithm (MQA) is faster than the ŋ-algorithm and requires less area on the SoC. It can be integrated into SoC with less hardware complexity than ŋ-algorithm. The MQA is a best solution in case that foreknowledge about the nerwork traffic are not available.
+The Pattern-Identication-Algorithm (PIA) is faster than the ŋ-algorithm and the Minimal-Queue-Algorithm. In case of properly implementation of the pattern for the PIA, the PIA is the most efficient of three algorithms proposed in this work.},
+  date        = {2014-09-08},
+  file        = {:Dissertations/Diss_Logvinenko.pdf:PDF},
+  institution = {Bergische Universität Wuppertal},
+  language    = {Deutsch},
+  location    = {Wuppertal},
+  owner       = {Julian Haase},
+  timestamp   = {2018-03-19},
+  url         = {http://elpub.bib.uni-wuppertal.de/servlets/DocumentServlet?id=4910},
+  urldate     = {2018-03-19},
+}
+
+@TechReport{Rantala2006,
+  author      = {Rantala, Ville and Lehtonen, Teijo and Plosila, Juha},
+  title       = {Network on Chip Routing Algorithms},
+  institution = {Turku Centre for Computer Science},
+  year        = {2006},
+  number      = {779},
+  abstract    = {Network on Chip (NoC) is a new paradigm to make the interconnections
+inside a System on Chip (SoC) system. In traditional solutions
+interconnections are realized using a bus structure. While integration
+increases the bus structure does not meet the needs of the new
+technology. Bus starts to be narrow and in the worst case it begins to
+block traffic. In NoC technology the bus structure is replaced
+with a network which is a lot similar to the Internet. Segments
+communicate with each other by sending packetized data over this
+network.
+
+Just like a computer network, a NoC network consists of devices that
+use the network, routers that direct the traffic between devices and
+wires that connect devices to routers and routers to other routers.
+In the network design of the NoC the most essential things are a
+network topology and a routing algorithm. Routers route the packets
+based on the algorithm that they use. There are many kind of different
+algorithms for different systems to choose. Every system has its own
+requirements for the routing algorithm.
+
+This report looks through the basics of networking on Network on Chip
+systems and presents proposed routing algorithms to be used on NoCs.
+In the end of the report the proposed router architectures are also
+presented.},
+  file        = {:TechReport/Network on Chip Routing Algorithms.pdf:PDF},
+  isbn        = {952-12-1764-2},
+  keywords    = {Network on Chip, routing algorithm, router architecture},
+  owner       = {Julian Haase},
+  publisher   = {Turku Centre for Computer Science},
+  series      = {TUCS Technical Reports},
+  timestamp   = {2018-04-18},
+  url         = {http://tucs.fi/publications/view/?pub_id=tRaLePl06a},
+}
+
+@Comment{jabref-meta: databaseType:bibtex;}

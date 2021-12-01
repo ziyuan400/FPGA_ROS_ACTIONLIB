@@ -1,0 +1,92 @@
+% ===============================================
+% LaTeX Task Template
+%
+% Author: Julian Haase
+% E-Mail: Julian.Haase@tu-dresden.de
+% Date: 25.04.2018
+% Please contact the author in case of questions.
+% ===============================================
+\RequirePackage[ngerman=ngerman-x-latest]{hyphsubst}	% better german hyphenation rules
+\documentclass[ngerman]{tudscrreprt}	% load Koma-Script-Class for the CD of the TUD
+\usepackage{scrhack}	% includes koma script patches for other packages
+% ===============================================
+%	Character coding and fonts for the document
+% ===============================================
+\usepackage[default,osfigures,scale=0.95]{opensans}	% font for the CD
+\usepackage[utf8]{inputenc}	% UTF-8 Support
+\usepackage[T1]{fontenc}	% T1 Fonts for font encoding
+%\usepackage[ngerman]{babel}	% German language with new orthography
+\usepackage[english]{babel}	% English language	
+\usepackage{microtype}	% better layout of the text
+% ===============================================
+%	Watermark - only for the draft
+% ===============================================
+%\usepackage[firstpage]{draftwatermark}
+%\SetWatermarkText{\textbf{draft}}
+%\SetWatermarkScale{1.1}
+% ===============================================
+%	Additional packages
+% ===============================================
+\usepackage{isodate}	% for several date formats
+\usepackage{enumitem}\setlist{noitemsep}	% less space between the items
+\usepackage{tudscrsupervisor}	% package for supervising templates for the CD of the TUD
+\usepackage{hyperref}	% get some links in the final document
+
+\usepackage{setspace}
+
+\begin{document}	
+% ===============================================
+%	Heading for the chair
+% ===============================================
+%\faculty{Fakultät Informatik}
+\faculty{Faculty of Computer Science}
+%\institute{Institut für Technische Informatik}
+\institute{Institute of Computer Engineering}
+%\chair{Professur für Adaptive Dynamische Systeme}
+\chair{Chair of Adaptive Dynamic Systems}
+%\headlogo{../../ADS/ADS_Logo.png}
+% ===============================================
+% ===============================================
+% ===============================================
+%	Change this for the given case
+% ===============================================
+% ===============================================
+% ===============================================
+\title{%
+	TBD
+}
+\thesis{student} % diploma, bachelor, student -> for details take a look at table 2.1 in tudscr.pdf
+\author{
+	FirstName LastName
+	\matriculationnumber{1111111}%
+	\dateofbirth{DD.MM.YYYY}%
+	\placeofbirth{Dresden}%
+	\course{INF-TBD}%
+	\discipline{Technische Informatik}%
+}
+\matriculationyear{YYYY}
+\issuedate{DD.MM.YYYY}
+\duedate{DD.MM.YYYY}
+\supervisor{Ariel Podlubne \and XX}
+%\referee{Prof. Dr. Diana Göhringer}
+\professor{Prof. Dr. Diana Göhringer}
+%\chairman{\href{https://www.inf.tu-dresden.de/index.php?node_id=410}{Getting the correct chairman dependig on the course}}
+\taskform[pagestyle=empty]{%
+	% Description of the thesis -> main objective
+
+%	{\fontsize{60}{48} \selectfont \textcolor{red}{Replace with}}
+%	
+%	\noindent{\fontsize{60}{48} \selectfont \textcolor{red}{scanned original!}}
+}{% the main points of the thesis
+
+\end{itemize}
+
+\normalsize{
+ }
+
+%\\ \vspace{2ex} \\
+%\footnotesize{If the student completes any of the optional tasks the supervisors will suggest a perfect score in the final presentation to the Chair. }
+
+\begin{itemize}
+}
+\end{document}

@@ -1,0 +1,18 @@
+When: DD.MM.20YY, HH:MM
+Where: 
+Who: 
+
+1 * STATUS QUO * What has been done since the last meeting?
+
+
+2 * DISCUSSION * Specific questions to discuss (and then discussed) during the meeting
+
+
+3 * TO DO * Specific tasks assigned during the meeting
+
+
+* NEXT MEETING * Coordinates of the next meeting
+
+When: DD.MM.20YY, HH:MM
+Where: 
+Who: 
