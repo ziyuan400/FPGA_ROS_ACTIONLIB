@@ -1,92 +1,111 @@
 % ===============================================
-% LaTeX Task Template
-%
-% Author: Julian Haase
-% E-Mail: Julian.Haase@tu-dresden.de
-% Date: 25.04.2018
-% Please contact the author in case of questions.
-% ===============================================
-\RequirePackage[ngerman=ngerman-x-latest]{hyphsubst}	% better german hyphenation rules
-\documentclass[ngerman]{tudscrreprt}	% load Koma-Script-Class for the CD of the TUD
-\usepackage{scrhack}	% includes koma script patches for other packages
-% ===============================================
-%	Character coding and fonts for the document
-% ===============================================
-\usepackage[default,osfigures,scale=0.95]{opensans}	% font for the CD
-\usepackage[utf8]{inputenc}	% UTF-8 Support
-\usepackage[T1]{fontenc}	% T1 Fonts for font encoding
-%\usepackage[ngerman]{babel}	% German language with new orthography
-\usepackage[english]{babel}	% English language	
-\usepackage{microtype}	% better layout of the text
-% ===============================================
-%	Watermark - only for the draft
-% ===============================================
-%\usepackage[firstpage]{draftwatermark}
-%\SetWatermarkText{\textbf{draft}}
-%\SetWatermarkScale{1.1}
-% ===============================================
-%	Additional packages
-% ===============================================
-\usepackage{isodate}	% for several date formats
-\usepackage{enumitem}\setlist{noitemsep}	% less space between the items
-\usepackage{tudscrsupervisor}	% package for supervising templates for the CD of the TUD
-\usepackage{hyperref}	% get some links in the final document
-
-\usepackage{setspace}
-
-\begin{document}	
-% ===============================================
-%	Heading for the chair
-% ===============================================
-%\faculty{Fakultät Informatik}
-\faculty{Faculty of Computer Science}
-%\institute{Institut für Technische Informatik}
-\institute{Institute of Computer Engineering}
-%\chair{Professur für Adaptive Dynamische Systeme}
-\chair{Chair of Adaptive Dynamic Systems}
-%\headlogo{../../ADS/ADS_Logo.png}
-% ===============================================
-% ===============================================
-% ===============================================
-%	Change this for the given case
-% ===============================================
-% ===============================================
-% ===============================================
-\title{%
-	TBD
-}
-\thesis{student} % diploma, bachelor, student -> for details take a look at table 2.1 in tudscr.pdf
-\author{
-	FirstName LastName
-	\matriculationnumber{1111111}%
-	\dateofbirth{DD.MM.YYYY}%
-	\placeofbirth{Dresden}%
-	\course{INF-TBD}%
-	\discipline{Technische Informatik}%
-}
-\matriculationyear{YYYY}
-\issuedate{DD.MM.YYYY}
-\duedate{DD.MM.YYYY}
-\supervisor{Ariel Podlubne \and XX}
-%\referee{Prof. Dr. Diana Göhringer}
-\professor{Prof. Dr. Diana Göhringer}
-%\chairman{\href{https://www.inf.tu-dresden.de/index.php?node_id=410}{Getting the correct chairman dependig on the course}}
-\taskform[pagestyle=empty]{%
-	% Description of the thesis -> main objective
-
-%	{\fontsize{60}{48} \selectfont \textcolor{red}{Replace with}}
-%	
-%	\noindent{\fontsize{60}{48} \selectfont \textcolor{red}{scanned original!}}
-}{% the main points of the thesis
-
-\end{itemize}
-
-\normalsize{
- }
-
-%\\ \vspace{2ex} \\
-%\footnotesize{If the student completes any of the optional tasks the supervisors will suggest a perfect score in the final presentation to the Chair. }
-
-\begin{itemize}
-}
-\end{document}
+	% LaTeX Task Template
+	%
+	% Author: Julian Haase
+	% E-Mail: Julian.Haase@tu-dresden.de
+	% Date: 25.04.2018
+	% Please contact the author in case of questions.
+	% ===============================================
+	\RequirePackage[ngerman=ngerman-x-latest]{hyphsubst}	% better german hyphenation rules
+	\documentclass[ngerman]{tudscrreprt}	% load Koma-Script-Class for the CD of the TUD
+	\usepackage{scrhack}	% includes koma script patches for other packages
+	% ===============================================
+	%	Character coding and fonts for the document
+	% ===============================================
+	\usepackage[default,osfigures,scale=0.95]{opensans}	% font for the CD
+	\usepackage[utf8]{inputenc}	% UTF-8 Support
+	\usepackage[T1]{fontenc}	% T1 Fonts for font encoding
+	%\usepackage[ngerman]{babel}	% German language with new orthography
+	\usepackage[english]{babel}	% English language	
+	\usepackage{microtype}	% better layout of the text
+	% ===============================================
+	%	Watermark - only for the draft
+	% ===============================================
+	%\usepackage[firstpage]{draftwatermark}
+	%\SetWatermarkText{\textbf{draft}}
+	%\SetWatermarkScale{1.1}
+	% ===============================================
+	%	Additional packages
+	% ===============================================
+	\usepackage{isodate}	% for several date formats
+	\usepackage{enumitem}\setlist{noitemsep}	% less space between the items
+	\usepackage{tudscrsupervisor}	% package for supervising templates for the CD of the TUD
+	\usepackage{hyperref}	% get some links in the final document
+	
+	\usepackage{setspace}
+	
+	\begin{document}	
+	% ===============================================
+	%	Heading for the chair
+	% ===============================================
+	%\faculty{Fakultät Informatik}
+	\faculty{Faculty of Computer Science}
+	%\institute{Institut für Technische Informatik}
+	\institute{Institute of Computer Engineering}
+	%\chair{Professur für Adaptive Dynamische Systeme}
+	\chair{Chair of Adaptive Dynamic Systems}
+	%\headlogo{../../ADS/ADS_Logo.png}
+	% ===============================================
+	% ===============================================
+	% ===============================================
+	%	Change this for the given case
+	% ===============================================
+	% ===============================================
+	% ===============================================
+	\title{%
+    Hardware implementation of PreemtableScheduling Approaches for the Robot Operating System (ROS) via actionlib
+	}
+	\thesis{student} % diploma, bachelor, student -> for details take a look at table 2.1 in tudscr.pdf
+	\author{
+		Ziyuan Zhang
+		\matriculationnumber{4659711}%
+		\course{Master}%
+		\discipline{Technische Informatik}%
+	}
+	\matriculationyear{2016}
+	\issuedate{01.12.2021}
+	\duedate{04.07.2022}
+	\supervisor{Ariel Podlubne}
+	%\referee{Prof. Dr. Diana Göhringer}
+	\professor{Prof. Dr. Diana Göhringer and Prof. Dr. rer. nat. habil. Uwe Aßmann}
+	\taskform[pagestyle=empty]{%
+		% Description of the thesis -> main objective
+		The aim of this research work focuses on the actionlib stack from ROS/ROS2. 
+        The main question to answer is whether it is possible to have a reliable scheme for preemtable tasks following the actionlib for FPGAs.
+        This would require an analysis of the state-of-the-art on HW schedulers, with a focus on preemtable tasks.
+        The impact of the HW implementation of a client and server on HW must be compared to the standard one on SW and be quantified to draw conclusions.
+        It is important to evaluate how the exchange of data between HW and SW should be and whether it is benefitial to have the FSMs completley on HW.
+        The benefits must be highlighted. 
+        Besides, the impact on the preemtion of HW accelerators must be considered.
+        Finally, the outcome should be a \textbf{generalizable} approach, considering that a system will have \textbf{multiple} HW-actions (accelerators).
+	
+	%	{\fontsize{60}{48} \selectfont \textcolor{red}{Replace with}}
+	%	
+	%	\noindent{\fontsize{60}{48} \selectfont \textcolor{red}{scanned original!}}
+	}{% the main points of the thesis
+		\item Research state-of-the-art for similar techniques
+        \begin{itemize}
+            \item (preemtable) HW schedulers
+            \item  Real-time HW schedulers
+            \item VHDL implementations of FSMs 
+        \end{itemize}
+		\item Become familiar with the Robot Operating System (ROS)
+        \begin{itemize}
+            \item Understand the differences among \textbf{topics}, \textbf{services} and \textbf{actions}
+            \item Find and propose examples for actionlib to be used for proof of concept for one and multiple actions
+        \end{itemize}
+		\item Implement Client and Server FSMs on HW (VHDL)
+        \begin{itemize}
+            \item \textbf{Proof of concept} for \textit{one action}
+            \item \textbf{Generalize} for \textit{multiple actions} at the same time
+            \begin{itemize}
+                \item Are multiple "actionlib" FSMs needed? If so, define the interaction among them
+                \item Is a \textit{general} FSM needed to coordinate all "child" FSMs?
+            \end{itemize}
+        \end{itemize}
+		\item Define Performance Metric (e.g., latency, throughput, tasks' and scheduler-FSMs- delays, HW resources) as in the state-of-the-art.
+		\item Evaluate the implementation and compare it using the performance metric with traditional SW actionlib.
+        \item Write \textit{research} thesis
+	}
+	\end{document}
+Event Timeline
