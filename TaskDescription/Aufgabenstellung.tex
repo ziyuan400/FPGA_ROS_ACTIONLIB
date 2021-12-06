@@ -67,14 +67,15 @@
 	\duedate{04.07.2022}
 	\supervisor{Ariel Podlubne}
 	%\referee{Prof. Dr. Diana Göhringer}
-	\professor{Prof. Dr. Diana Göhringer and Prof. Dr. rer. nat. habil. Uwe Aßmann}
+	% \professor{Prof. Dr. Diana Göhringer and Prof. Dr. rer. nat. habil. Uwe Aßmann}
+	\professor{Prof. Dr. Diana Göhringer}
 	\taskform[pagestyle=empty]{%
 		% Description of the thesis -> main objective
 		The aim of this research work focuses on the actionlib stack from ROS/ROS2. 
-        The main question to answer is whether it is possible to have a reliable scheme for preemtable tasks following the actionlib for FPGAs.
-        This would require an analysis of the state-of-the-art on HW schedulers, with a focus on preemtable tasks.
-        The impact of the HW implementation of a client and server on HW must be compared to the standard one on SW and be quantified to draw conclusions.
-        It is important to evaluate how the exchange of data between HW and SW should be and whether it is benefitial to have the FSMs completley on HW.
+        The main question to answer is whether it is possible to have a reliable scheme for preemtable tasks following the actionlib for Field Programmable Gate Arrays (FPGAs).
+        This would require an analysis of the state-of-the-art on Hardware (HW) schedulers, with a focus on preemtable tasks.
+        The impact of the HW implementation of a client and server on HW must be compared to the standard one on Software (SW) and be quantified to draw conclusions.
+        It is important to evaluate how the exchange of data between HW and SW should be and whether it is benefitial to have the Finite State Machines (FSMs) completley on HW.
         The benefits must be highlighted. 
         Besides, the impact on the preemtion of HW accelerators must be considered.
         Finally, the outcome should be a \textbf{generalizable} approach, considering that a system will have \textbf{multiple} HW-actions (accelerators).
@@ -83,27 +84,27 @@
 	%	
 	%	\noindent{\fontsize{60}{48} \selectfont \textcolor{red}{scanned original!}}
 	}{% the main points of the thesis
-		\item Research state-of-the-art for similar techniques
+	\vspace{-0.1cm}\item Research state-of-the-art for similar techniques
         \begin{itemize}
-            \item Real-time and preemtable HW schedulers
-            \item VHDL implementations of FSMs 
+            \vspace{-0.1cm}\item Real-time and preemtable HW schedulers
+            \vspace{-0.1cm}\item VHDL implementations of FSMs 
         \end{itemize}
-		\item Become familiar with the Robot Operating System (ROS)
+		\vspace{-0.1cm}\item Become familiar with the Robot Operating System (ROS)
         \begin{itemize}
-            \item Understand the differences among \textbf{topics}, \textbf{services} and \textbf{actions}
-            \item Propose usecases for actionlib as proof of concept for one and multiple actions
+            \vspace{-0.1cm}\item Understand the differences among \textbf{topics}, \textbf{services} and \textbf{actions}
+            \vspace{-0.1cm}\item Propose usecases for actionlib as proof of concept for one and multiple actions
         \end{itemize}
-		\item Implement Client and Server FSMs on HW (VHDL)
+		\vspace{-0.1cm}\item Implement Client and Server FSMs on HW (VHDL)
         \begin{itemize}
-            \item \textbf{Proof of concept} for \textit{one action}
-            \item \textbf{Generalize} for \textit{multiple actions} at the same time
+            \vspace{-0.1cm}\item \textbf{Proof of concept} for \textit{one action}
+            \vspace{-0.1cm}\item \textbf{Generalize} for \textit{multiple actions} at the same time
             \begin{itemize}
-                \item Are multiple "actionlib" FSMs needed? If so, define the interaction among them
-                \item Is a \textit{general} FSM needed to coordinate all "child" FSMs?
+                \vspace{-0.1cm}\item Are multiple "actionlib" FSMs needed? If so, define the interaction among them
+                \vspace{-0.1cm}\item Is a \textit{general} FSM needed to coordinate all "child" FSMs?
             \end{itemize}
         \end{itemize}
-		\item Define Performance Metric (e.g., latency, throughput, tasks' and scheduler-FSMs- delays, HW resources) as in the state-of-the-art.
-		\item Evaluate the implementation and compare it using the performance metric with traditional SW actionlib.
+		\vspace{-0.1cm}\item Define Performance Metric (e.g., latency, throughput, tasks' and scheduler-FSMs- delays, HW resources) as in the state-of-the-art.
+		\vspace{-0.1cm}\item Evaluate the implementation and compare it using the performance metric with traditional SW actionlib.
 	}
 	\end{document}
 Event Timeline
