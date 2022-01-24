@@ -22,7 +22,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
-
+use ieee.std_logic_unsigned.all;
 
 entity Client is
     Port (  
@@ -65,7 +65,18 @@ architecture Behavioral of Client is
     signal cancel_goal: std_logic:='0';
     signal receive_result_msg: std_logic:='0';
 
-begin
+begin   
+
+    fibonacci_req: process(clk)
+    begin
+        if(rising_edge(clk)) then
+            goal_order <= x"00000004";
+        end if;
+    end process;
+    
+    send_goal <= '1';
+    receive_result_msg <= '1' when result_sequence = 0;
+    
     client_state_machine: process (clk)
     begin
         if(rising_edge(clk)) then
@@ -122,15 +133,4 @@ begin
             end if; 
         end if;   
     end process;
-    
-    
-    fibonacci: process(clk)
-    begin
-        if(rising_edge(clk)) then
-            goal_order <= x"0000000a";
-        end if;
-    end process;
-    
-
-
 end Behavioral;

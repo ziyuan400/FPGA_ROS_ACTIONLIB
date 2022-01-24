@@ -67,6 +67,7 @@ architecture Behavioral of Server is
     signal setSucceeded: std_logic:='0';
     signal setAborted: std_logic:='0';
     signal setCanceled: std_logic:='0';
+   
     
     --The action client can also asynchronously trigger state transitions:
     signal CancelRequest: std_logic:='0';
@@ -83,9 +84,39 @@ architecture Behavioral of Server is
 begin
     
     CancelRequest <= cancel;
+    status <= server_state;
     GoalRequest <= '1' when goal_order > 0;
     setAccepted <= '1' when goal_order > 0 and goal_order < 30;
     setRejected <= '1' when goal_order > 0 and goal_order >= 30;
+    setSucceeded <= '1' when order = goal_order;
+    result_sequence <= third when server_state = 6;
+    feedback_sequence <= third when server_state = 9;
+    
+    --Once a goal(with its state)reaches its terminal state, it stucks their forever.
+    --Server can serve only one goal in his entire life for now. 
+    --In SW, multiple goals can be served in a list.
+    
+    fibonacci: process(clk)
+    begin
+        if(rising_edge(clk) and second = 0) then
+            second <= second + '1';         
+        end if;
+        if(rising_edge(clk) and server_state = 2 and order < goal_order) then
+            if (swap_count = 0) then
+                third <= first + second;
+                swap_count <= swap_count + '1';
+            elsif (swap_count = 1) then
+                first <= second; 
+                swap_count <= swap_count + '1';
+            elsif (swap_count = 2) then
+                second <= third;
+                order <= order + '1';
+                swap_count <= "00";
+            end if;            
+        end if;
+    end process;
+    
+    
     
     server_state_machine: process (clk)
     begin
@@ -128,24 +159,6 @@ begin
                 end if;   
             end if;
         end if;   
-    end process;
-    
-    fibonacci: process(clk)
-    begin
-        if(rising_edge(clk) and server_state = 2) then
-            if (swap_count = 0) then
-                third <= first + second;
-                swap_count <= swap_count + '1';
-            elsif (swap_count = 1) then
-                first <= second; 
-                swap_count <= swap_count + '1';
-            elsif (swap_count = 2) then
-                second <= third;
-                order <= order + '1';
-                swap_count <= "00";
-            end if;
-            
-        end if;
-    end process;
+    end process;    
     
 end Behavioral;

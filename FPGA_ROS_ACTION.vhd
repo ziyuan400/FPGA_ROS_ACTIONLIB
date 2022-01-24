@@ -90,6 +90,47 @@ architecture Behavioral of FPGA_ROS_ACTION is
         );
   end component;
   
+  component Client is
+    Port (  
+        clk : in STD_LOGIC;
+        reset : in STD_LOGIC;
+        -- Cancel and Status Topic
+        cancel: out STD_LOGIC;
+        status: in std_logic_vector(3 downto 0);  
+        
+        -- Msg defined in Fibonacci.action
+        -- Goal Topic {int32 order }
+        goal_order: out std_logic_vector(31 downto 0);
+    
+        -- Feedback Topic {int32[] sequence }
+        feedback_sequence: in std_logic_vector(31 downto 0);
+    
+        -- Result Topic {int32[] sequence }
+        result_sequence: in std_logic_vector(31 downto 0)    
+     );
+    end component;
+    
+    component Server is
+    Port (  
+        clk : in STD_LOGIC;
+        reset : in STD_LOGIC;
+        -- Cancel and Status Topic
+        cancel: in STD_LOGIC;
+        status: out std_logic_vector(3 downto 0);  
+        
+        -- Msg defined in Fibonacci.action
+        -- Goal Topic {int32 order }
+        goal_order: in std_logic_vector(31 downto 0);
+    
+        -- Feedback Topic {int32[] sequence }
+        feedback_sequence: out std_logic_vector(31 downto 0);
+    
+        -- Result Topic {int32[] sequence }
+        result_sequence: out std_logic_vector(31 downto 0)
+    
+     );
+    end component;
+  
   -- ROS message definition
   signal total_length :  std_logic_vector(31 downto 0);
   signal data_length :  std_logic_vector(31 downto 0);
@@ -101,6 +142,14 @@ architecture Behavioral of FPGA_ROS_ACTION is
   -- Control signals
   signal newData :  std_logic;
   signal allRead :  std_logic;
+  
+  -- Server Client Connections
+  
+  signal cancel :  std_logic;
+  signal status :  std_logic_vector(3 downto 0);
+  signal goal_order :  std_logic_vector(31 downto 0);
+  signal feedback_sequence :  std_logic_vector(31 downto 0);
+  signal result_sequence :  std_logic_vector(31 downto 0);
   
 begin
 
@@ -138,6 +187,25 @@ m2a: std_msgs_String_to_AXIS Port map(
               data_tready_out => data_tready,
               newData  => newData,
               allRead  => allRead
+);
+
+server1: Server port map(
+        clk  => clk,
+        reset => reset,
+        cancel  => cancel,
+        status => status,
+        goal_order => goal_order,
+        feedback_sequence => feedback_sequence,
+        result_sequence => result_sequence
+);
+client1: Client port map(
+        clk  => clk,
+        reset => reset,
+        cancel  => cancel,
+        status => status,
+        goal_order => goal_order,
+        feedback_sequence => feedback_sequence,
+        result_sequence => result_sequence
 );
 
 
