@@ -18,21 +18,20 @@
 -- 
 ----------------------------------------------------------------------------------
 
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 use ieee.std_logic_unsigned.all;
-
 
 entity Server is
     Port (
         clk : in STD_LOGIC;
         reset : in STD_LOGIC;
         -- Cancel and Status Topic
-        goalRequest: in STD_LOGIC;
-        cancelRequest: in STD_LOGIC;
+        goal: in STD_LOGIC;
+        cancel: in STD_LOGIC;
         status: out std_logic_vector(3 downto 0);
+        status_to_client: out std_logic_vector(3 downto 0);
         --The majority of these state transitions are triggered by the server implementer, using a small set of possible commands:
         setAccepted: in std_logic;
         setRejected: in std_logic;
@@ -61,25 +60,25 @@ begin
     --Once a goal(with its state)reaches its terminal state, it stucks their forever.
     --Server can serve only one goal in his entire life for now. 
     --In SW, multiple goals can be served in a list.    
-    
+    status_to_client <= server_state;
     status <= server_state;
     server_state_machine: process (clk)
     begin
         if(rising_edge(clk)) then
             if(server_state = x"0") then
-                if(goalRequest = '1') then
+                if(goal = '1') then
                     server_state <= x"1";
                     end if;    
             elsif(server_state = x"1") then       --1.    Pending - The goal has yet to be processed by the action server
                if(setAccepted = '1') then
                     server_state <= x"2";             --2.    Active 
-                elsif(cancelRequest = '1') then
+                elsif(cancel = '1') then
                     server_state <= x"3";             --3.    Recalling
                 elsif(setRejected = '1') then
                     server_state <= x"5";             --5.    Rejected - The goal was rejected by the action server without being processed and without a request from the action client to cancel   
                 end if;      
             elsif(server_state = x"2") then       --2.    Active - The goal is currently being processed by the action server  
-                if(cancelRequest = '1') then
+                if(cancel = '1') then
                     server_state <= x"4";             --4.    Preempting  
                 elsif(setSucceeded = '1') then 
                     server_state <= x"6";             --6.    Succeeded - The goal was achieved successfully by the action server

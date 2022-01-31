@@ -28,20 +28,20 @@ entity Client is
     Port (  
         clk : in STD_LOGIC;
         reset : in STD_LOGIC;
-        -- Cancel and Status Topic
-        cancel: out STD_LOGIC;
-        status: in std_logic_vector(3 downto 0);  
         
-        -- Msg defined in Fibonacci.action
-        -- Goal Topic {int32 order }
-        goal_order: out std_logic_vector(31 downto 0);
-    
-        -- Feedback Topic {int32[] sequence }
-        feedback_sequence: in std_logic_vector(31 downto 0);
-    
-        -- Result Topic {int32[] sequence }
-        result_sequence: in std_logic_vector(31 downto 0)
-    
+        -- Cancel and status control signals to servers
+        goal: out STD_LOGIC;
+        cancel: out STD_LOGIC;
+        status: in std_logic_vector(3 downto 0);
+        clinet_status: out std_logic_vector(3 downto 0);
+        
+        -- Recieve signals from clients, the state transitions are triggered by the server status from input and following client signals:
+        client_id: in std_logic_vector(3 downto 0);
+        server_id: in std_logic_vector(3 downto 0);
+        
+        send_goal: in STD_LOGIC;
+        cancel_goal: in STD_LOGIC;
+        receive_result_msg: in STD_LOGIC
      );
 end Client;
 
@@ -59,24 +59,7 @@ architecture Behavioral of Client is
     --8.    Done
        
     signal clinet_state: std_logic_vector(3 downto 0):="0000";
-        
-    --The state transitions are triggered by the server status from input and following client signals:
-    signal send_goal: std_logic:='0';
-    signal cancel_goal: std_logic:='0';
-    signal receive_result_msg: std_logic:='0';
-
 begin   
-
-    fibonacci_req: process(clk)
-    begin
-        if(rising_edge(clk)) then
-            goal_order <= x"0000000a";
-        end if;
-    end process;
-    
-    send_goal <= '1';
-    receive_result_msg <= '1' when result_sequence = 0;
-    
     client_state_machine: process (clk)
     begin
         if(rising_edge(clk)) then
@@ -133,4 +116,6 @@ begin
             end if; 
         end if;   
     end process;
+    clinet_status <= clinet_state;
+    goal <= '1';
 end Behavioral;
