@@ -46,7 +46,16 @@ entity main is
         s_axis_tdata : in STD_LOGIC_VECTOR ( 7 downto 0 );
         s_axis_tlast : in STD_LOGIC_VECTOR ( 0 to 0 );
         s_axis_tready : out STD_LOGIC_VECTOR ( 0 to 0 );
-        s_axis_tvalid : in STD_LOGIC_VECTOR ( 0 to 0 )
+        s_axis_tvalid : in STD_LOGIC_VECTOR ( 0 to 0 );
+        
+        m_axis_tdata_to_file : out STD_LOGIC_VECTOR ( 7 downto 0 );
+        m_axis_tlast_to_file : out STD_LOGIC_VECTOR ( 0 to 0 );
+        m_axis_tready_to_file : in STD_LOGIC_VECTOR ( 0 to 0 );
+        m_axis_tvalid_to_file : out STD_LOGIC_VECTOR ( 0 to 0 );
+        s_axis_tdata_from_file : out STD_LOGIC_VECTOR ( 7 downto 0 );
+        s_axis_tlast_from_file : out STD_LOGIC_VECTOR ( 0 to 0 );
+        s_axis_tready_from_file : in STD_LOGIC_VECTOR ( 0 to 0 );
+        s_axis_tvalid_from_file : out STD_LOGIC_VECTOR ( 0 to 0 )
     );
 end main;
 
@@ -99,18 +108,18 @@ architecture Behavioral of main is
     end component; 
 
     -- ROS message definition
-    signal total_length_result:  std_logic_vector(31 downto 0);
-    signal data_length_result :  std_logic_vector(31 downto 0);
-    signal data_tdata_result :  std_logic_vector(7 downto 0);
-    signal data_tvalid_result :  std_logic;
-    signal data_tlast_result :  std_logic;
-    signal data_tready_result :  std_logic;
-    signal total_length_goal :  std_logic_vector(31 downto 0);
-    signal data_length_goal :  std_logic_vector(31 downto 0);
-    signal data_tdata_goal :  std_logic_vector(7 downto 0);
-    signal data_tvalid_goal :  std_logic;
-    signal data_tlast_goal :  std_logic;
-    signal data_tready_goal :  std_logic;
+    signal total_length_result:  std_logic_vector(31 downto 0):=(others=>'0');
+    signal data_length_result :  std_logic_vector(31 downto 0):=(others=>'0');
+    signal data_tdata_result :  std_logic_vector(7 downto 0):=(others=>'0');
+    signal data_tvalid_result :  std_logic:='0';
+    signal data_tlast_result :  std_logic:='0';
+    signal data_tready_result :  std_logic:='0';
+    signal total_length_goal :  std_logic_vector(31 downto 0):=(others=>'0');
+    signal data_length_goal :  std_logic_vector(31 downto 0):=(others=>'0');
+    signal data_tdata_goal :  std_logic_vector(7 downto 0):=(others=>'0');
+    signal data_tvalid_goal :  std_logic:='0';
+    signal data_tlast_goal :  std_logic:='0';
+    signal data_tready_goal :  std_logic:='0';
     
     -- Control signals
     signal newData_goal :  std_logic:='1';
@@ -147,8 +156,8 @@ begin
         data_tlast_out => data_tlast_result,
         data_tready_in  => data_tready_result,
         -- Control signals
-        newData => newData_goal,
-        allRead  => allRead_goal
+        newData => newData_result,
+        allRead  => allRead_result
     );
     
     Write_goal_topic: std_msgs_String_to_AXIS port map(        
@@ -167,37 +176,43 @@ begin
         data_tlast_in => data_tlast_goal,
         data_tready_out  => data_tready_goal,
         -- Control signals
-        newData => newData_result,
-        allRead  => allRead_result
+        newData => newData_goal,
+        allRead  => allRead_goal
     );
 
 
+    newData_goal <= '1' when allread_goal = '0' else
+                    '0';
+    total_length_goal <= x"00000008" when allread_goal = '0' else 
+                        (others => '0');
+    data_length_goal <= x"00000004" when allread_goal = '0' else
+                        (others => '0');
+    data_tdata_goal <=   x"0a" when (write_counter = 0 and data_tvalid_goal = '1') else
+                         x"00" when (write_counter = 1 and data_tvalid_goal = '1') else
+                         x"00" when (write_counter = 2 and data_tvalid_goal = '1') else
+                         x"00" when (write_counter = 3 and data_tvalid_goal = '1') else
+                         x"00";
+    data_tlast_goal <= '1' when write_counter = 4 else
+                        '0' ;
+    data_tvalid_goal <= data_tready_goal and newData_goal;
+                        
     Fibonacci_requst: process(clk)
     begin
         if(rising_edge(clk)) then
-            if(allread_goal = '0') then
-                total_length_goal <= x"00000008";
-                data_length_goal <= x"00000004";
-                newData_goal <= '1';
-                if(write_counter = 1) then
-                    data_tdata_goal <= x"0a";
-                    write_counter <= write_counter +1;
-                elsif (write_counter = 2) then
-                    data_tdata_goal <= x"00";
-                    write_counter <= write_counter +1;
-                elsif (write_counter = 3) then
-                   data_tdata_goal <= x"00";
-                    write_counter <= write_counter +1;
-                elsif (write_counter = 4) then
-                    data_tdata_goal <= x"00";
+            if(allread_goal = '0') then                                          
+                if(data_tready_goal = '1') then        
+                    if(write_counter = 0) then
+                        write_counter <= write_counter +1;
+                    elsif(write_counter = 1) then
+                        write_counter <= write_counter +1;
+                    elsif (write_counter = 2) then
+                        write_counter <= write_counter +1;
+                    elsif (write_counter = 3) then
+                        write_counter <= write_counter +1;
+                    end if;
                 end if;
-            end if;
-            if(allread_goal = '1') then
-                total_length_goal <= x"00000000";
-                data_length_goal <= x"00000000";
-                data_tdata_goal <= x"00";
+            elsif(allread_goal = '1') then
                 write_counter <= "000";
-                newData_goal <= '0';
             end if;
         end if;
     end process;
@@ -207,17 +222,18 @@ begin
         if(rising_edge(clk)) then
             if(newData_result = '1') then
                 data_tready_result <= '1'; 
-                if(read_counter = 0) then
-                    result_sequence(31 downto 24) <= data_tdata_result;
-                    read_counter <= read_counter +1;
-                elsif (read_counter = 1) then
-                    result_sequence(23 downto 16) <= data_tdata_result;
-                    read_counter <= read_counter +1;
-                elsif (read_counter = 2) then
-                    result_sequence(15 downto 8) <= data_tdata_result;
-                    read_counter <= read_counter +1;
-                elsif (read_counter = 3) then
+                if(read_counter = 0 and data_tvalid_result = '1') then
                     result_sequence(7 downto 0) <= data_tdata_result;
+                    read_counter <= read_counter +'1';
+                elsif (read_counter = 1 and data_tvalid_result = '1') then
+                    result_sequence(15 downto 8) <= data_tdata_result;
+                    read_counter <= read_counter +'1';
+                elsif (read_counter = 2 and data_tvalid_result = '1') then
+                    result_sequence(23 downto 16) <= data_tdata_result;
+                    read_counter <= read_counter +'1';
+                elsif (read_counter = 3 and data_tvalid_result = '1') then
+                    result_sequence(31 downto 24) <= data_tdata_result;
+                    read_counter <= read_counter +'1';
                     allRead_result <= '1';
                 end if;
                 
@@ -229,4 +245,13 @@ begin
             end if;
         end if;
     end process;
+    
+   
+    m_axis_tlast_to_file(0) <= allRead_result when read_counter = 4 else '0';
+    m_axis_tvalid_to_file(0) <= data_tvalid_result when read_counter > 0;
+    m_axis_tdata_to_file <= result_sequence(7 downto 0) when (read_counter = 1 and data_tvalid_result = '1') else
+                            result_sequence(15 downto 8) when (read_counter = 2 and data_tvalid_result = '1') else
+                            result_sequence(23 downto 16) when (read_counter = 3 and data_tvalid_result = '1') else
+                            result_sequence(31 downto 24) when (read_counter = 4 and data_tvalid_result = '1') else
+                             x"00";
 end Behavioral;

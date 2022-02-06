@@ -121,6 +121,9 @@ architecture Behavioral of Fibonacci_accelerator is
     signal read_counter: std_logic_vector(2 downto 0):="000";
     signal write_counter: std_logic_vector(2 downto 0):="000";
     
+    signal tlast_delay :  std_logic;
+    signal tlast_delay_result :  std_logic;
+    
     -- Msg defined in Fibonacci.action
     -- Goal Topic {int32 order }
     signal goal_order:  std_logic_vector(31 downto 0);    
@@ -209,19 +212,23 @@ begin
             if(status = x"1" and newData_goal = '1') then
                 data_tready_goal<= '1';            
                 if(data_tvalid_goal = '1' and read_counter = 0) then
-                    goal_order(31 downto 24) <= data_tdata_goal;
+                    goal_order(7 downto 0) <= data_tdata_goal;
                     read_counter <= read_counter + 1;
                 elsif(data_tvalid_goal = '1' and read_counter = 1) then
-                    goal_order(23 downto 16) <= data_tdata_goal;
-                    read_counter <= read_counter + 1;
-                elsif(data_tvalid_goal = '1' and read_counter = 2) then
                     goal_order(15 downto 8) <= data_tdata_goal;
                     read_counter <= read_counter + 1;
+                elsif(data_tvalid_goal = '1' and read_counter = 2) then
+                    goal_order(23 downto 16) <= data_tdata_goal;
+                    read_counter <= read_counter + 1;
                 elsif(data_tvalid_goal = '1' and read_counter = 3) then
-                    goal_order(7 downto 0) <= data_tdata_goal;
+                    goal_order(31 downto 24) <= data_tdata_goal;
+                elsif(data_tvalid_goal = '1' and read_counter = 4) then
                     allRead_goal <= '1';
                 end if;                
                 if(data_tlast_goal = '1' and status = x"1") then 
+                    tlast_delay<='1';
+                end if;                
+                if(tlast_delay = '1' and status = x"1") then 
                     if(goal_order > 0 and goal_order < 30) then
                         setAccepted <= '1';   
                     elsif(goal_order = 0 or goal_order >= 30) then
@@ -234,39 +241,44 @@ begin
                 setAccepted <= '0';   
                 setRejected <= '0';   
                 allRead_goal <= '0';
+                tlast_delay<= '0';
             end if;                  
         end if;
     end process;    
     
-    data_tdata_result <= third(7 downto 0) when data_tready_result = '1' and write_counter = 0 else
-                     third(15 downto 8) when  data_tready_result = '1' and write_counter = 1 else
-                     third(23 downto 16) when  data_tready_result = '1' and write_counter = 2 else
-                     third(31 downto 24) when data_tready_result = '1' and write_counter = 3;
-
     Sequence_Writer: process(clk)
     begin
        if(rising_edge(clk)) then
-            if(status = x"6" or status = x"7" or status = x"8" or status = x"9")  then                
-                data_tvalid_result <= '0';    
-                data_tlast_result <= '0';      
-                newData_result <= '0';     
-                total_length_result <= x"00000000";
-                data_length_result <= x"00000000";   
-            elsif(order = goal_order and allRead_result = '0')  then 
-                newData_result <= '1';
-                data_tvalid_result <= '1';               
-                total_length_result <= x"00000008";
-                data_length_result <= x"00000004";                
-                if(write_counter = 3)then
+            if(data_tvalid_result = '1') then 
+                if(write_counter = 0) then
+                    write_counter <= write_counter +'1';
+                elsif(write_counter = 1) then
+                    write_counter <= write_counter +'1';
+                elsif (write_counter = 2) then
+                    write_counter <= write_counter +'1';
+                elsif (write_counter = 3) then
+                    write_counter <= write_counter +'1';                        
                     data_tlast_result <= '1';
                     setSucceeded <= '1';
-                    write_counter <= "000";
-                elsif(write_counter < data_length_result) then
-                        write_counter <= write_counter + '1';
-                end if;                    
+                end if;
+            elsif(allread_goal = '1') then
+                write_counter <= "000";
             end if;
-            
         end if;    
     end process; 
-    
+    newData_result <= '1' when allread_result = '0' and order = goal_order  else
+                    '0';
+    data_tvalid_result <= data_tready_result and newData_result;
+    total_length_result <= x"00000008" when newData_result = '1' else 
+                         x"00000000";
+    data_length_result <= x"00000004" when newData_result = '1' else
+                        x"00000000";
+    data_tdata_result <= third(7 downto 0) when (write_counter = 0 and data_tvalid_goal = '1') else
+                         third(15 downto 8) when (write_counter = 1 and data_tvalid_goal = '1') else
+                         third(23 downto 16) when (write_counter = 2 and data_tvalid_goal = '1') else
+                         third(31 downto 24) when (write_counter = 3 and data_tvalid_goal = '1') else
+                         x"00";
+    data_tlast_result <= '1' when write_counter = 4 else
+                        '0' ;
+                            
 end Behavioral;
