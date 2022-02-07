@@ -126,7 +126,6 @@ begin
     m_axis_tlast <= s_tlast;
     allread <= s_tlast_delay;
 
-    m_axis_tlast <= '1' when s_counter_total=(total_length_in+4)-1 else '0';
     m_axis_tvalid <= count_EN and newData;
     m_axis_tdata <= std_logic_vector(to_unsigned(c_IDIP, m_axis_tdata'length)) when (m_axis_tready='1' and count_EN='1') and s_counter=0 else
                       total_length_in(7 downto 0) when s_counter=0+1 else

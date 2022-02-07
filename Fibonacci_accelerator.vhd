@@ -206,11 +206,12 @@ begin
         end if;
     end process;
     
+    allRead_goal <= '1' when data_tvalid_goal = '1' and read_counter = 5 else '0';
+    data_tready_goal <= newData_goal when status = 1 else '0';
     Fibonacci_reader: process(clk)
     begin
         if(rising_edge(clk)) then
-            if(status = x"1" and newData_goal = '1') then
-                data_tready_goal<= '1';            
+            if(status = x"1" and newData_goal = '1') then         
                 if(data_tvalid_goal = '1' and read_counter = 0) then
                     goal_order(7 downto 0) <= data_tdata_goal;
                     read_counter <= read_counter + 1;
@@ -222,8 +223,9 @@ begin
                     read_counter <= read_counter + 1;
                 elsif(data_tvalid_goal = '1' and read_counter = 3) then
                     goal_order(31 downto 24) <= data_tdata_goal;
-                elsif(data_tvalid_goal = '1' and read_counter = 4) then
-                    allRead_goal <= '1';
+                    read_counter <= read_counter + 1;
+                elsif(data_tvalid_goal = '1' and read_counter = 4) then                
+                    read_counter <= read_counter + 1;
                 end if;                
                 if(data_tlast_goal = '1' and status = x"1") then 
                     tlast_delay<='1';
@@ -236,11 +238,9 @@ begin
                     end if;
                 end if;
             elsif(status = x"6" or status = x"7" or status = x"8" or status = x"9" ) then      
-                read_counter <= "000";          
-                data_tready_goal<= '0';   
+                read_counter <= "000";     
                 setAccepted <= '0';   
                 setRejected <= '0';   
-                allRead_goal <= '0';
                 tlast_delay<= '0';
             end if;                  
         end if;
@@ -257,8 +257,8 @@ begin
                 elsif (write_counter = 2) then
                     write_counter <= write_counter +'1';
                 elsif (write_counter = 3) then
-                    write_counter <= write_counter +'1';                        
-                    data_tlast_result <= '1';
+                    write_counter <= write_counter +'1';  
+                elsif (write_counter = 4) then
                     setSucceeded <= '1';
                 end if;
             elsif(allread_goal = '1') then
@@ -273,10 +273,10 @@ begin
                          x"00000000";
     data_length_result <= x"00000004" when newData_result = '1' else
                         x"00000000";
-    data_tdata_result <= third(7 downto 0) when (write_counter = 0 and data_tvalid_goal = '1') else
-                         third(15 downto 8) when (write_counter = 1 and data_tvalid_goal = '1') else
-                         third(23 downto 16) when (write_counter = 2 and data_tvalid_goal = '1') else
-                         third(31 downto 24) when (write_counter = 3 and data_tvalid_goal = '1') else
+    data_tdata_result <= third(7 downto 0) when (write_counter = 0 and data_tvalid_result = '1') else
+                         third(15 downto 8) when (write_counter = 1 and data_tvalid_result = '1') else
+                         third(23 downto 16) when (write_counter = 2 and data_tvalid_result = '1') else
+                         third(31 downto 24) when (write_counter = 3 and data_tvalid_result = '1') else
                          x"00";
     data_tlast_result <= '1' when write_counter = 4 else
                         '0' ;

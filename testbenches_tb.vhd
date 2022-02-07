@@ -52,10 +52,10 @@ architecture bench of testbenches_tb is
         m_axis_tlast_to_file : out STD_LOGIC_VECTOR ( 0 to 0 );
         m_axis_tready_to_file : in STD_LOGIC_VECTOR ( 0 to 0 );
         m_axis_tvalid_to_file : out STD_LOGIC_VECTOR ( 0 to 0 );
-        s_axis_tdata_from_file : out STD_LOGIC_VECTOR ( 7 downto 0 );
-        s_axis_tlast_from_file : out STD_LOGIC_VECTOR ( 0 to 0 );
-        s_axis_tready_from_file : in STD_LOGIC_VECTOR ( 0 to 0 );
-        s_axis_tvalid_from_file : out STD_LOGIC_VECTOR ( 0 to 0 ));
+        s_axis_tdata_from_file : in STD_LOGIC_VECTOR ( 7 downto 0 );
+        s_axis_tlast_from_file : in STD_LOGIC_VECTOR ( 0 to 0 );
+        s_axis_tready_from_file : out STD_LOGIC_VECTOR ( 0 to 0 );
+        s_axis_tvalid_from_file : in STD_LOGIC_VECTOR ( 0 to 0 ));
   end component;
   component Fibonacci_accelerator
       Port (
