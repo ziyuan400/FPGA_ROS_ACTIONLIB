@@ -32,9 +32,7 @@ entity main is
         clk : in STD_LOGIC;
         rst : in STD_LOGIC;
 
-        clinet_state: in std_logic_vector(3 downto 0);
-        client_id: out std_logic_vector(3 downto 0);
-        server_id: out std_logic_vector(3 downto 0);
+        client_state: in std_logic_vector(3 downto 0);
         send_goal: out STD_LOGIC;
         cancel_goal: out STD_LOGIC;
         receive_result_msg: out STD_LOGIC;
@@ -48,14 +46,14 @@ entity main is
         s_axis_tready : out STD_LOGIC_VECTOR ( 0 to 0 );
         s_axis_tvalid : in STD_LOGIC_VECTOR ( 0 to 0 );
         
-        m_axis_tdata_to_file : out STD_LOGIC_VECTOR ( 7 downto 0 );
-        m_axis_tlast_to_file : out STD_LOGIC_VECTOR ( 0 to 0 );
-        m_axis_tready_to_file : in STD_LOGIC_VECTOR ( 0 to 0 );
-        m_axis_tvalid_to_file : out STD_LOGIC_VECTOR ( 0 to 0 );
-        s_axis_tdata_from_file : in STD_LOGIC_VECTOR ( 7 downto 0 );
-        s_axis_tlast_from_file : in STD_LOGIC_VECTOR ( 0 to 0 );
-        s_axis_tready_from_file : out STD_LOGIC_VECTOR ( 0 to 0 );
-        s_axis_tvalid_from_file : in STD_LOGIC_VECTOR ( 0 to 0 )
+        m_axis_tdata_write_file : out STD_LOGIC_VECTOR ( 7 downto 0 );
+        m_axis_tlast_write_file : out STD_LOGIC_VECTOR ( 0 to 0 );
+        m_axis_tready_write_file : in STD_LOGIC_VECTOR ( 0 to 0 );
+        m_axis_tvalid_write_file : out STD_LOGIC_VECTOR ( 0 to 0 );
+        s_axis_tdata_read_file : in STD_LOGIC_VECTOR ( 7 downto 0 );
+        s_axis_tlast_read_file : in STD_LOGIC_VECTOR ( 0 to 0 );
+        s_axis_tready_read_file : out STD_LOGIC_VECTOR ( 0 to 0 );
+        s_axis_tvalid_read_file : in STD_LOGIC_VECTOR ( 0 to 0 )
     );
 end main;
 
@@ -181,86 +179,88 @@ begin
         newData => newData_goal,
         allRead  => allRead_goal
     );
-      
-    s_axis_tready_from_file(0) <= newData_goal when (write_counter > 8 and data_tready_goal = '1') or write_counter < 9 else '0';    
-    newData_goal <= '1' when allread_goal = '0' else '0';
+ 
+    s_axis_tready_read_file(0) <= '1' when (write_counter > 8 and data_tready_goal = '1') or write_counter < 9 else '0'; 
+    data_tdata_goal <=   s_axis_tdata_read_file when data_tvalid_goal = '1' and 
+                        ( write_counter = 9 or write_counter = 10 or write_counter = 11 or write_counter = 12)
+                         else (others => '0');       
+    send_goal <= s_axis_tvalid_read_file(0);    
+    
+   
     total_length_goal <= goal_total_length when allread_goal = '0' else (others => '0');
     data_length_goal <= goal_data_length when allread_goal = '0' else (others => '0');
-    data_tdata_goal <=   s_axis_tdata_from_file when data_tvalid_goal = '1' and 
-                        ( write_counter = 9 or write_counter = 10 or write_counter = 11 or write_counter = 12)
-                         else (others => '0');
-    data_tlast_goal <= '1' when write_counter = 12 else '0' ;
+    data_tlast_goal <= '1' when write_counter = 12 else '0';
     data_tvalid_goal <= data_tready_goal  and newData_goal;
-    send_goal <= '1';              
+    
     Fibonacci_requst: process(clk)
     begin
         if(rising_edge(clk)) then
-            if(allread_goal = '0' and newData_goal = '1' and s_axis_tvalid_from_file(0) = '1') then 
-                if (s_axis_tvalid_from_file(0) = '1') then
-                    if(write_counter = 0) then
-                        write_counter <= write_counter +1;
-                    elsif(write_counter = 1) then
-                        goal_total_length(7 downto 0) <= s_axis_tdata_from_file;
-                        write_counter <= write_counter +1;
-                    elsif (write_counter = 2) then
-                        goal_total_length(15 downto 8) <= s_axis_tdata_from_file;
-                        write_counter <= write_counter +1;
-                    elsif (write_counter = 3) then
-                        goal_total_length(23 downto 16) <= s_axis_tdata_from_file;
-                        write_counter <= write_counter +1;
-                    elsif (write_counter = 4) then
-                        goal_total_length(31 downto 24) <= s_axis_tdata_from_file;
-                        write_counter <= write_counter +1;
-                    elsif(write_counter = 5) then
-                        goal_data_length(7 downto 0) <= s_axis_tdata_from_file;
-                        write_counter <= write_counter +1;
-                    elsif (write_counter = 6) then
-                        goal_data_length(15 downto 8) <= s_axis_tdata_from_file;
-                        write_counter <= write_counter +1;
-                    elsif (write_counter = 7) then
-                        goal_data_length(23 downto 16) <= s_axis_tdata_from_file;
-                        write_counter <= write_counter +1;
-                    elsif (write_counter = 8) then
-                        goal_data_length(31 downto 24) <= s_axis_tdata_from_file;
-                        write_counter <= write_counter +1;
-                    elsif(write_counter = 9 and data_tready_goal = '1') then
-                        write_counter <= write_counter +1;
-                    elsif (write_counter = 10) then
-                        write_counter <= write_counter +1;
-                    elsif (write_counter = 11) then
-                        write_counter <= write_counter +1;
-                    elsif (write_counter = 12) then
-                        write_counter <= write_counter +1;
-                    end if;
-                end if;
-            elsif(allread_goal = '1' and write_counter = 13) then
+            if(newData_goal = '0' and allRead_result = '1') then 
+                newData_goal <= '1';
+            end if;
+            if(allread_goal = '1' and write_counter = 12) then
+                newData_goal <= '0';
                 write_counter <=  (others => '0');
                 goal_total_length <=  (others => '0');
                 goal_data_length <=  (others => '0');
                 goal_order <=  (others => '0');
+            elsif(s_axis_tvalid_read_file(0) = '1') then  
+                if(write_counter = 0) then
+                    write_counter <= write_counter +1;
+                elsif(write_counter = 1) then
+                    goal_total_length(7 downto 0) <= s_axis_tdata_read_file;
+                    write_counter <= write_counter +1;
+                elsif (write_counter = 2) then
+                    goal_total_length(15 downto 8) <= s_axis_tdata_read_file;
+                    write_counter <= write_counter +1;
+                elsif (write_counter = 3) then
+                    goal_total_length(23 downto 16) <= s_axis_tdata_read_file;
+                    write_counter <= write_counter +1;
+                elsif (write_counter = 4) then
+                    goal_total_length(31 downto 24) <= s_axis_tdata_read_file;
+                    write_counter <= write_counter +1;
+                elsif(write_counter = 5) then
+                    goal_data_length(7 downto 0) <= s_axis_tdata_read_file;
+                    write_counter <= write_counter +1;
+                elsif (write_counter = 6) then
+                    goal_data_length(15 downto 8) <= s_axis_tdata_read_file;
+                    write_counter <= write_counter +1;
+                elsif (write_counter = 7) then
+                    goal_data_length(23 downto 16) <= s_axis_tdata_read_file;
+                    write_counter <= write_counter +1;
+                elsif (write_counter = 8) then
+                    goal_data_length(31 downto 24) <= s_axis_tdata_read_file;
+                    write_counter <= write_counter +1;
+                    
+                elsif(write_counter = 9 and data_tready_goal = '1') then
+                    write_counter <= write_counter +1;
+                elsif (write_counter = 10) then
+                    write_counter <= write_counter +1;
+                elsif (write_counter = 11) then
+                    write_counter <= write_counter +1;
+                elsif (write_counter = 12) then
+                    write_counter <= write_counter +1;
+                elsif (write_counter = 13) then
+                    write_counter <= write_counter +1;
+                elsif (write_counter = 14) then
+                    write_counter <= write_counter +1;
+                end if;              
             end if;
         end if;
     end process;
     
-    data_tready_result <= newData_result;
     
     Receive_result: process(clk)
     begin
         if(rising_edge(clk)) then
             if(newData_result = '1' and data_tvalid_result = '1') then
                 if(read_counter = 0) then
-                    result_sequence(7 downto 0) <= data_tdata_result;
                     read_counter <= read_counter +'1';
                 elsif (read_counter = 1) then
-                    result_sequence(15 downto 8) <= data_tdata_result;
                     read_counter <= read_counter +'1';
                 elsif (read_counter = 2) then
-                    result_sequence(23 downto 16) <= data_tdata_result;
                     read_counter <= read_counter +'1';
                 elsif (read_counter = 3) then
-                    result_sequence(31 downto 24) <= data_tdata_result;
-                    read_counter <= read_counter +'1';
-                elsif (read_counter = 4) then
                     read_counter <= read_counter +'1';
                     allRead_result <= '1';
                 end if;
@@ -270,14 +270,20 @@ begin
                 allRead_result <= '0';
             end if;
         end if;
-    end process;    
-   
-    m_axis_tlast_to_file(0) <= allRead_result when read_counter = 3 else '0';
-    m_axis_tvalid_to_file(0) <= data_tvalid_result when read_counter > 0;
-    m_axis_tdata_to_file <= result_sequence(7 downto 0) when (read_counter = 0 and data_tvalid_result = '1') else
+    end process;
+    
+    receive_result_msg <= allRead_result;
+    data_tready_result <= not allRead_result;
+    result_sequence(7 downto 0) <= data_tdata_result when read_counter = 0 else (others => '0');
+    result_sequence(15 downto 8) <= data_tdata_result when read_counter = 1 else (others => '0');
+    result_sequence(23 downto 16) <= data_tdata_result when read_counter = 2 else (others => '0');
+    result_sequence(31 downto 24) <= data_tdata_result when read_counter = 3 else (others => '0');
+                    
+    m_axis_tlast_write_file(0) <= '1' when read_counter >  3 else '0';
+    m_axis_tvalid_write_file(0) <= data_tvalid_result;
+    m_axis_tdata_write_file <= result_sequence(7 downto 0) when (read_counter = 0 and data_tvalid_result = '1') else
                             result_sequence(15 downto 8) when (read_counter = 1 and data_tvalid_result = '1') else
                             result_sequence(23 downto 16) when (read_counter = 2 and data_tvalid_result = '1') else
                             result_sequence(31 downto 24) when (read_counter = 3 and data_tvalid_result = '1') else
                             (others => '0');
-    
 end Behavioral;

@@ -25,27 +25,24 @@ use IEEE.NUMERIC_STD.ALL;
 use ieee.std_logic_unsigned.all;
 
 entity Client is
+    generic (
+        CAPACITY    : integer := 8
+    );
     Port (  
         clk : in STD_LOGIC;
-        reset : in STD_LOGIC;
-        
-        -- Cancel and status control signals to servers
-        goal: out STD_LOGIC;
-        cancel: out STD_LOGIC;
-        status: in std_logic_vector(3 downto 0);
-        clinet_status: out std_logic_vector(3 downto 0);
-        
-        -- Recieve signals from clients, the state transitions are triggered by the server status from input and following client signals:
-        client_id: in std_logic_vector(3 downto 0);
-        server_id: in std_logic_vector(3 downto 0);
-        
-        send_goal: in STD_LOGIC;
-        cancel_goal: in STD_LOGIC;
-        receive_result_msg: in STD_LOGIC
+        reset : in STD_LOGIC;        
+        -- status control signals to servers
+        server_state: in std_logic_vector(4 * CAPACITY -1  downto 0);
+        client_state: out std_logic_vector(4 * CAPACITY -1  downto 0);        
+        -- Recieve signals from clients, the state transitions are triggered by the server status from input and following client signals:        
+        goal: in std_logic_vector(CAPACITY -1  downto 0);
+        cancel: in std_logic_vector(CAPACITY -1  downto 0);
+        receive_result_msg: in std_logic_vector(CAPACITY -1  downto 0)
      );
 end Client;
 
 architecture Behavioral of Client is
+
     --State machine adapted from http://wiki.ros.org/actionlib/DetailedDescription
     --In actionlib, we treat the server state machine as the primary machine, and then treat the client state machine as a secondary/coupled state machine that tries to track the server's state
     --0.    init
@@ -58,66 +55,73 @@ architecture Behavioral of Client is
     --7.    Waiting for result
     --8.    Done
        
-    signal clinet_state: std_logic_vector(3 downto 0):="0000";
+    type client_state_vector is array (0 to CAPACITY-1) of std_logic_vector(3 downto 0);
+    signal state: client_state_vector:=(others=>(others=>'0')); 
+    signal server_state_in: client_state_vector:=(others=>(others=>'0')); 
 begin   
-
-    clinet_status <= clinet_state;
-    goal <= send_goal;
-    cancel <= cancel_goal;
-    client_state_machine: process (clk)
-    begin
-        if(rising_edge(clk)) then
-            if(clinet_state = "0000") then
-                if(send_goal = '1') then
-                    clinet_state <= "0001";
-                end if;    
-            elsif(clinet_state = "0101") then       --5.    Waiting for goal ACK
-                if(cancel_goal = '1') then
-                    clinet_state <= "0110";             --6.    Waiting for cancel ACK 
-                elsif(status = "0001") then
-                    clinet_state <= "0001";             --1.    Pending
-                elsif(status = "0010") then
-                    clinet_state <= "0010";             --2.    Active
-                end if;    
-            elsif(clinet_state = "0001") then       --1.    Pending - The goal has yet to be processed by the action server
-               if(cancel_goal = '1') then
-                    clinet_state <= "0110";             --6.    Waiting for cancel ACK  
-                elsif(status = "0010") then
-                    clinet_state <= "0010";                 --2.    Active
-                elsif(status = "0011") then
-                    clinet_state <= "0011";                 --3.    Recalling
-                elsif(status = "0101") then             --5.Rejected 
-                    clinet_state <= "0111";                 --7.    Waiting for result   
-                end if;      
-            elsif(clinet_state = "0010") then       --2.    Active - The goal is currently being processed by the action server  
-                if(cancel_goal = '1') then 
-                    clinet_state <= "0110";             --6.    Waiting for cancel ACK
-                elsif(status = "0100") then
-                    clinet_state <= "0100";             --4.    Preempting  
-                elsif(status = "0110" or status = "0111") then  
-                    clinet_state <= "0111";             --7.    Waiting for result
-                end if;      
-            elsif(clinet_state = "0110") then       --6.    Waiting for cancel ACK
-                if(status = "0011") then
-                    clinet_state <= "0011";             --3.    Recalling
-                elsif(status = "0100") then
-                    clinet_state <= "0100";             --4.    Preempting
-                end if;      
-            elsif(clinet_state = "0011") then       --3.    Recalling - The goal has not been processed and a cancel request has been received from the action client, but the action server has not confirmed the goal is canceled
-                if(status = "0100") then
-                    clinet_state <= "0100";             --4.    Preempting 
-                elsif(status = "0101" or status = "1000") then
-                    clinet_state <= "0111";             --7.    Waiting for result
-                end if;     
-            elsif(clinet_state = "0100") then       --4.    Preempting - The goal is being processed, and a cancel request has been received from the action client, but the action server has not confirmed the goal is canceled
-                if(status = "0110" or status = "0111" or status = "1001") then
-                    clinet_state <= "0110";             --7.    Waiting for result
-                end if;        
-            elsif(clinet_state = "0111") then       --7.    Waiting for result
-                if(receive_result_msg = '1') then
-                    clinet_state <= "1000";             --8.    Done
-                end if;  
-            end if; 
-        end if;   
-    end process;
+    vector2array:  for i in CAPACITY-1 downto 0 generate
+        client_state(i * 4 + 3 downto i * 4) <= state(i); 
+    end generate;
+    vector2array_server:  for i in CAPACITY-1 downto 0 generate
+        server_state_in(i) <= server_state(i * 4 + 3 downto i * 4);
+    end generate;
+    
+    client_state_machine_vector:    for i in CAPACITY-1 downto 0 generate
+        client_state_machine: process (clk)
+        begin
+            if(rising_edge(clk)) then                
+                if(state(i) = x"0" or state(i) = x"8") then
+                    if(goal(i) = '1') then
+                        state(i) <= x"1";
+                    end if;    
+                elsif(state(i) = x"5") then       --5.    Waiting for goal ACK
+                    if(cancel(i) = '1') then
+                        state(i) <= x"6";             --6.    Waiting for cancel ACK 
+                    elsif(server_state_in(i) = x"1") then
+                        state(i) <= x"1";             --1.    Pending
+                    elsif(server_state_in(i) = x"2") then
+                        state(i) <= x"2";             --2.    Active
+                    end if;    
+                elsif(state(i) = x"1") then       --1.    Pending - The goal has yet to be processed by the action server
+                   if(cancel(i) = '1') then
+                        state(i) <= x"6";             --6.    Waiting for cancel ACK  
+                    elsif(server_state_in(i) = x"2") then
+                        state(i) <= x"2";                 --2.    Active
+                    elsif(server_state_in(i) = x"3") then
+                        state(i) <= x"3";                 --3.    Recalling
+                    elsif(server_state_in(i) = x"5") then             --5.Rejected 
+                        state(i) <= x"7";                 --7.    Waiting for result   
+                    end if;      
+                elsif(state(i) = x"2") then       --2.    Active - The goal is currently being processed by the action server  
+                    if(cancel(i) = '1') then 
+                        state(i) <= x"6";             --6.    Waiting for cancel ACK
+                    elsif(server_state_in(i) = x"4") then
+                        state(i) <= x"4";             --4.    Preempting  
+                    elsif(server_state_in(i) = x"6" or server_state_in(i) = x"7") then  
+                        state(i) <= x"7";             --7.    Waiting for result
+                    end if;      
+                elsif(state(i) = x"6") then       --6.    Waiting for cancel ACK
+                    if(server_state_in(i) = x"3") then
+                        state(i) <= x"3";             --3.    Recalling
+                    elsif(server_state_in(i) = x"4") then
+                        state(i) <= x"4";             --4.    Preempting
+                    end if;      
+                elsif(state(i) = x"3") then       --3.    Recalling - The goal has not been processed and a cancel request has been received from the action client, but the action server has not confirmed the goal is canceled
+                    if(server_state_in(i) = x"4") then
+                        state(i) <= x"4";             --4.    Preempting 
+                    elsif(server_state_in(i) = x"5" or server_state_in(i) = x"8") then
+                        state(i) <= x"7";             --7.    Waiting for result
+                    end if;     
+                elsif(state(i) = x"4") then       --4.    Preempting - The goal is being processed, and a cancel request has been received from the action client, but the action server has not confirmed the goal is canceled
+                    if(server_state_in(i) = x"6" or server_state_in(i) = x"7" or server_state_in(i) = x"9") then
+                        state(i) <= x"6";             --7.    Waiting for result
+                    end if;        
+                elsif(state(i) = x"7") then       --7.    Waiting for result
+                    if(receive_result_msg(i) = '1') then
+                        state(i) <= x"8";             --8.    Done
+                    end if;  
+                end if;             
+            end if;   
+        end process;
+    end generate;
 end Behavioral;

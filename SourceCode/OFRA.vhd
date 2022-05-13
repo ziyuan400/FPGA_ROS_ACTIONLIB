@@ -24,7 +24,7 @@ use ieee.std_logic_unsigned.all;
 use IEEE.math_real.all;
 use work.util.all;
 
-entity FPGA_ROS_ACTION is
+entity OFRA is
     generic (
         BITS               : integer := 8;
         CLIENT_CAPACITY    : integer := 8;
@@ -51,8 +51,8 @@ entity FPGA_ROS_ACTION is
         axis_server_in: in  AXIS (SERVER_CAPACITY - 1 downto 0 );
         axis_server_out: out  AXIS (SERVER_CAPACITY - 1 downto 0 )
     );
-end FPGA_ROS_ACTION;
-architecture Behavioral of FPGA_ROS_ACTION is
+end OFRA;
+architecture Behavioral of OFRA is
     component Client is
         generic (
             CAPACITY    : integer := 8

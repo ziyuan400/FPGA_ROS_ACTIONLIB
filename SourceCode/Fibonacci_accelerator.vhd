@@ -198,7 +198,7 @@ begin
                 order <= order + '1';
                 swap_count <= "00";
             end if; 
-        elsif(status = x"6" or status = x"7" or status = x"8" or status = x"9") then         
+        elsif(status = x"5" or status = x"6" or status = x"7" or status = x"8" or status = x"9") then         
             first <= x"00000000";
             second <= x"00000001";
             third <= x"00000000";  
@@ -206,12 +206,12 @@ begin
         end if;
     end process;
     
-    allRead_goal <= '1' when data_tvalid_goal = '1' and read_counter = 5 else '0';
-    data_tready_goal <= newData_goal when status = 1 else '0';
+
+    data_tready_goal <= '1' when status = 1 and newData_goal = '1'  else '0';
     Fibonacci_reader: process(clk)
     begin
         if(rising_edge(clk)) then
-            if(status = x"1" and newData_goal = '1') then         
+            if(status = x"1" and data_tvalid_goal = '1' and data_tready_goal = '1') then         
                 if(data_tvalid_goal = '1' and read_counter = 0) then
                     goal_order(7 downto 0) <= data_tdata_goal;
                     read_counter <= read_counter + 1;
@@ -224,32 +224,34 @@ begin
                 elsif(data_tvalid_goal = '1' and read_counter = 3) then
                     goal_order(31 downto 24) <= data_tdata_goal;
                     read_counter <= read_counter + 1;
-                elsif(data_tvalid_goal = '1' and read_counter = 4) then                
-                    read_counter <= read_counter + 1;
-                end if;                
-                if(data_tlast_goal = '1' and status = x"1") then 
-                    tlast_delay<='1';
-                end if;                
-                if(tlast_delay = '1' and status = x"1") then 
-                    if(goal_order > 0 and goal_order < 30) then
-                        setAccepted <= '1';   
-                    elsif(goal_order = 0 or goal_order >= 30) then
-                        setRejected <= '1';   
-                    end if;
+                    allRead_goal <= '1'; 
                 end if;
-            elsif(status = x"6" or status = x"7" or status = x"8" or status = x"9" ) then      
-                read_counter <= "000";     
+            elsif(status = x"5" or status = x"6" or status = x"7" or status = x"8" or status = x"9" ) then      
+                read_counter <= "000";
                 setAccepted <= '0';   
                 setRejected <= '0';   
                 tlast_delay<= '0';
-            end if;                  
+                allRead_goal <= '0'; 
+            end if;                         
+            if(status = x"1" and data_tlast_goal = '1') then 
+                tlast_delay<='1';
+            end if;                
+            if(status = x"1" and tlast_delay = '1') then 
+                if(goal_order > 0 and goal_order < 30) then
+                    setAccepted <= '1';   
+                elsif(goal_order = 0 or goal_order >= 30) then
+                    setRejected <= '1';   
+                end if;
+            end if;               
         end if;
     end process;    
     
     Sequence_Writer: process(clk)
     begin
        if(rising_edge(clk)) then
-            if(data_tready_result = '1') then 
+            if(status = x"5" or status = x"6" or status = x"7" or status = x"8" or status = x"9") then         
+                setSucceeded <= '0';   
+            elsif(data_tready_result = '1' and newData_result = '1') then 
                 if(write_counter = 0) then
                     write_counter <= write_counter +'1';
                 elsif(write_counter = 1) then
@@ -257,28 +259,27 @@ begin
                 elsif (write_counter = 2) then
                     write_counter <= write_counter +'1';
                 elsif (write_counter = 3) then
-                    write_counter <= write_counter +'1';  
-                elsif (write_counter = 4) then
                     setSucceeded <= '1';
                 end if;
-            elsif(allread_goal = '1') then
+            elsif(allread_result = '1') then
                 write_counter <= "000";
-            end if;
+            end if;        
         end if;    
     end process; 
-    newData_result <= '1' when allread_result = '0' and order = goal_order  else
+    newData_result <= '1' when order = goal_order  else
                     '0';
     data_tvalid_result <= data_tready_result and newData_result;
-    total_length_result <= x"00000008" when newData_result = '1' else 
-                         x"00000000";
-    data_length_result <= x"00000004" when newData_result = '1' else
-                        x"00000000";
+    total_length_result <= x"00000008" when newData_result = '1' else (others => '0');
+    data_length_result <= x"00000004" when newData_result = '1' else (others => '0');
     data_tdata_result <= third(7 downto 0) when (write_counter = 0 and data_tvalid_result = '1') else
                          third(15 downto 8) when (write_counter = 1 and data_tvalid_result = '1') else
                          third(23 downto 16) when (write_counter = 2 and data_tvalid_result = '1') else
                          third(31 downto 24) when (write_counter = 3 and data_tvalid_result = '1') else
                          x"00";
-    data_tlast_result <= '1' when write_counter = 3 else
-                        '0' ;
+    data_tlast_result <= '1' when write_counter = 3 else '0' ;
                             
 end Behavioral;
+
+--0, 0, 1, 2, 3, 4, 5, 6,  7,  8,  9,  A,  B,   C,   D,   E,   F,   10,   11,   12,   13,   14,   15, 
+--0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181.
+--0, 1, 1, 2, 3, 5, 8, d,  15, 22, 37, 59  90,  E9,  179, 262, 3DB, 63D,  A18,  1055, 1A6D, 2AC2, 452F
