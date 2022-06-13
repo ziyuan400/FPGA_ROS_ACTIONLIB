@@ -28,7 +28,7 @@ entity FPGA_ROS_ACTION is
     generic (
         BITS               : integer := 8;
         CLIENT_CAPACITY    : integer := 8;
-        SERVER_CAPACITY    : integer := 2
+        SERVER_CAPACITY    : integer := 8
     );
     Port (
         clk : in STD_LOGIC;

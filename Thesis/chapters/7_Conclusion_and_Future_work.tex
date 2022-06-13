@@ -1,4 +1,9 @@
 \chapter{Conclusion and Future Work}
 \label{sec:conclusion_and_future_work}
 
-Conclusion and future work.
+In the era of AI compute at the end of Dennard scaling and Moore’s Law, a lot of \gls{dsl} architectures and codes emerges with help of the agile hardware design empowered by \gls{fpga}. This paper provided a general interface design based on AXIS Stream for a heterogeneous distributed hardware design. 
+We experimented the fully combination architecture to choose a max number from a list and complete the switch in two clock cycles. We then analysed the scaling behavior of the design and given suggestions of a complex combined hardware design.
+
+Although the implementation of the hardware scheduler proved the concept of the design, it is in practise not well parameterized and don't fit the purpose of easy to use and flexibility. Although this design separated the scheduler policy from the framework and make the design easier, many popular scheduler policy implementation are not yet available to choose. In the future, this paper will make the \gls{hwfra} architecture easier to parameterize and test, the library of scheduler policy will be enriched.  
+
+

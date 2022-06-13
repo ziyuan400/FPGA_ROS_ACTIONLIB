@@ -210,10 +210,10 @@ begin
         setAborted       => setAborted(SERVER_CAPACITY - 1 downto 0 ),
         setCanceled      => setCanceled(SERVER_CAPACITY - 1 downto 0 ),
         server_state     => status,        
-        axis_client_in   => client_in,
-        axis_client_out  => client_out,
-        axis_server_in   => server_in,
-        axis_server_out  => server_out
+        axis_client_in => client_in,
+        axis_client_out => client_out,
+        axis_server_in => server_in,
+        axis_server_out => server_out
 --        axis_tdata_goal_in  => axis_tdata_goal_in,
 --        axis_tlast_goal_in  => axis_tlast_goal_in,
 --        axis_tready_goal_in => axis_tready_goal_in,

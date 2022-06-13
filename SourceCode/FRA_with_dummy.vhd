@@ -34,8 +34,8 @@ use work.util.all;
 
 entity FRA_with_dummy is   generic (
         BITS               : integer := 8;
-        CLIENT_CAPACITY    : integer := 32;
-        SERVER_CAPACITY    : integer := 4
+        CLIENT_CAPACITY    : integer := 8;
+        SERVER_CAPACITY    : integer := 2
     );
     Port (
         clk : in STD_LOGIC;

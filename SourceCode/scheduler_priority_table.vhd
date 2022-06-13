@@ -118,7 +118,6 @@ architecture Behavioral of scheduler_priority_table is
     constant CLIENT_LOG   : integer := log(CLIENT_CAPACITY); 
     constant SERVER_LOG   : integer := log(SERVER_CAPACITY); 
     constant PRIORITY_NUMBER_WIDTH  : integer := 4; 
-    constant PRIORITY_NUMBER_MAX  : std_logic_vector := "1111"; 
    
     signal priority_table_client           : std_logic_vector(CLIENT_CAPACITY * PRIORITY_NUMBER_WIDTH - 1 downto 0):=(others => '0'); 
     signal masked_table_client             : std_logic_vector(CLIENT_CAPACITY * PRIORITY_NUMBER_WIDTH - 1 downto 0):=(others => '0'); 
@@ -134,7 +133,7 @@ architecture Behavioral of scheduler_priority_table is
     signal selected_server_index           : std_logic_vector(SERVER_LOG -1 downto 0):= (others => '0');    
     signal selected_client_index           : std_logic_vector(CLIENT_LOG -1 downto 0):= (others => '0');   
     signal selected_server_isactive        : std_logic_vector(0 downto 0); 
-        
+    
     signal modified_client                 : std_logic_vector(CLIENT_LOG -1 downto 0);   
     signal done_client                     : std_logic_vector(CLIENT_LOG -1 downto 0);   
     signal done_client_vec                 : std_logic_vector(CLIENT_CAPACITY -1 downto 0);    
@@ -190,37 +189,23 @@ begin
         write_register_v(i)  <= '1' when goal(i) = '1' and clientState_Active(i) = '0'
                                                        and selected_client_vector(i) = '1' 
                                                        and selected_server_isactive(0) = '0' 
-                                                       and finish(i) = '0'
-                                                       else '0'; 
+                                                       and finish(i) = '0' else '0'; 
     end generate;
     write_register <= '1' when write_register_v >0 else '0';
     delete_register <= '1' when delete_register_v >0 else '0';
     
             
---    Priority: for i in CLIENT_CAPACITY-1 downto 0 generate
---        Least_frequent_used: process(clk)
---        begin
---            if(rising_edge(clk)) then
---                if(write_register_v(i) = '1') then
---                    priority_table_client(PRIORITY_NUMBER_WIDTH * (i+1) - 1 downto PRIORITY_NUMBER_WIDTH * i) <= min_priority_number_client + '1';
---                end if;
---                if(min_priority_number_client = (others=>'1')) then
---                    priority_table_client(PRIORITY_NUMBER_WIDTH * (i+1) - 1 downto PRIORITY_NUMBER_WIDTH * i) <= (others=>'0');
---                end if;
-                
---            end if;
---        end process;
---    end generate;
     Priority: for i in CLIENT_CAPACITY-1 downto 0 generate
-        Last_recently_used: process(clk)
+--        Last_recently_used: process(clk)
+        Least_frequent_used: process(clk)
         begin
             if(rising_edge(clk)) then
                 if(write_register_v(i) = '1') then
                     priority_table_client(PRIORITY_NUMBER_WIDTH * (i+1) - 1 downto PRIORITY_NUMBER_WIDTH * i) <= min_priority_number_client + '1';
                 end if;
-                if(min_priority_number_client = PRIORITY_NUMBER_MAX) then
-                    priority_table_client(PRIORITY_NUMBER_WIDTH * (i+1) - 1 downto PRIORITY_NUMBER_WIDTH * i) <= (others=>'0');
-                end if;
+                if(priority_table_client(PRIORITY_NUMBER_WIDTH * (i+1) - 1 downto PRIORITY_NUMBER_WIDTH * i)  = "1111") then
+                
+                 end if;
                 
             end if;
         end process;

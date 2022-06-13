@@ -1,4 +1,8 @@
 \chapter{Introduction}
 \label{sec:introduction}
+The growing demand for computationally expensive, state-of-the-art \gls{dnn}, coupled with diminishing performance gains of general-purpose architectures, has fueled an explosion of \gls{dsl} and also have to meet the requirements: of flexibility to accommodate evolving state-of-the-art models without costly silicon updates. 
 
-Motivation, problem statement and mention the structure of the thesis \textit{in a few words}.
+This paper introduced a ROS actionlib hardware design framework that based on a scheduler to make robotic hardware design easier. After analyzed many AI hardware accelerators and robotic designs, we concluded the common design of a hardware scheduler to support them independently and designed a communication layer architecture \gls{hwfra} above all hardware design to manage data flow. This communication layer architecture adapted ROS actionlib concept and manage data transport between heterogeneous hardware nodes. The framework talk to each independent developers by providing an interface of AXIS Stream and provide a set of scheduler policy.
+
+The remainder of the paper is structured as follows. In Section 2, the background of \gls{fpga} and  In Section 3, previous research results in \gls{fpga} Accelerator, hardware scheduler and robotic systems are reviewed. In Section 4, the design concept and structure of the scheduler is introduced. Section 5 presents the detailed components of hardware scheduler architecture and Section 5 discusses the
+implementation. In Section 6, its resource utilization and scaling is analyzed.

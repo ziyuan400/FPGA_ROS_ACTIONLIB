@@ -7,5 +7,13 @@
 \TUDoption{abstract}{multiple,section,notoc}
 \renewcaptionname{english}{\abstractname}{Abstract}
 \begin{abstract}[pagestyle=empty.tudheadings]%
-The abstract should be around \textit{400 words} explaining the content of the thesis.
+
+We are living in an era where information grows exponentially and creates the need for massive computing power to process that information. At the same time, advances in silicon fabrication technology are approaching theoretical limits, and Moore’s Law has run its course. Chip performance improvements no longer keep pace with the needs of cutting-edge, computationally expensive workloads like Artificial Intelligence. To create a faster, more intelligent cloud that keeps up with growing appetites for computing power, data centers need to add other processors distinctly suited for critical workloads. This lead to the need of agile development on hardware architecture. \gls{fpga} offer a unique combination of speed and flexibility and greatly shorted the time for hardware development.
+
+Scheduler design is critical in many hardware accelerators. Developers design hardware scheduler component to control the other components of their work independently. This paper explored the possibility of a hardware design method that use a universal hardware switch to substitute scheduler design in each hardware accelerator architecture. This hardware switch tried to fit as much architectures as possible by assuming AXIS Stream connection interface of the to be connected components. In order not to lost the speed gain of hardware accelerator, this architecture should implement most of the component that is possible to be fully combinational, therefore most of the scheduler process can be done within one clock cycle. So the latency need of most scheduler function can be replaced without efficiency loss.
+
+This paper introduced a hardware architecture \gls{hwfra} to experiment this idea. \gls{hwfra} simulates the behavior of ROS Actionlib to connect independent developed hardware architectures and to make robotic hardware design easier.  \gls{hwfra} is a communication layer architecture like a switch that lies above all hardware nodes, so these nodes can connect to a ready target node dynamically. This design also adapted ROS actionlib concept so the architectures that implemented the actionlib interface can make a reliable connection. The architecture provide an interface of AXIS Stream and provide a set of scheduler policy to test. 
+
+We wrote a test client and a test server and wrapped them with AXIS Stream functions and tested their behavior by analysing the communication of a set of test clients and servers. We experimented the fully combination architecture resource usage scale when client number or server number grows.
+
 \end{abstract}
